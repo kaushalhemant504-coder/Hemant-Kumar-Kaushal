@@ -1,0 +1,13 @@
+<h1>Welcome to Library Dashboard</h1>
+<a href="/logout">Logout</a>
+<table border="1">
+    <tr><th>ID</th><th>Title</th><th>Author</th><th>Status</th></tr>
+    {% for book in books %}
+    <tr>
+        <td>{{ book[0] }}</td>
+        <td>{{ book[1] }}</td>
+        <td>{{ book[2] }}</td>
+        <td>{{ book[3] }}</td>
+    </tr>
+    {% endfor %}
+</table>

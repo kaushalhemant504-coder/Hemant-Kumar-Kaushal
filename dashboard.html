@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Library System</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial; margin: 20px; background: #eceff1; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .search-container { margin-bottom: 20px; display: flex; gap: 10px; }
+        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+        th { background: #2c3e50; color: white; }
+        .btn { padding: 6px 12px; text-decoration: none; color: white; border-radius: 4px; font-size: 13px; }
+        .btn-del { background: #e74c3c; }
+        .btn-issue { background: #27ae60; }
+        .btn-search { background: #3498db; border: none; color: white; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2>📚 Library Management Dashboard <a href="/logout" style="float:right; font-size: 14px; color: red;">Logout</a></h2>
+
+    <div class="card">
+        <form action="/dashboard" method="GET" class="search-container">
+            <input type="text" name="search" placeholder="Search by Title or ID..." value="{{search_query}}" style="flex-grow: 1;">
+            <button type="submit" class="btn-search">Search</button>
+            <a href="/dashboard" style="text-decoration: none; color: #666; padding-top: 8px;">Clear</a>
+        </form>
+    </div>
+
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <div class="card" style="flex: 1; min-width: 300px;">
+            <h3>Add New Book</h3>
+            <form action="/add" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" name="b_id" placeholder="Book ID (Unique)" required>
+                <input type="text" name="title" placeholder="Book Title" required>
+                <input type="text" name="author" placeholder="Author Name" required>
+                <button type="submit" class="btn-issue" style="border:none; padding:10px; cursor:pointer;">+ Add to Library</button>
+            </form>
+        </div>
+
+        <div class="card" style="flex: 1; min-width: 300px;">
+            <h3>Issue Book</h3>
+            <form action="/issue" method="POST" style="display: flex; flex-direction: column; gap: 10px;">
+                <input type="text" name="b_id" placeholder="Book ID" required>
+                <input type="text" name="student" placeholder="Student Name / ERP ID" required>
+                <button type="submit" style="background: #f39c12; color: white; border:none; padding:10px; cursor:pointer;">Issue Book</button>
+            </form>
+        </div>
+    </div>
+
+    <h3>Inventory List</h3>
+    <table>
+        <tr><th>ID</th><th>Title</th><th>Author</th><th>Status</th><th>Issued To</th><th>Actions</th></tr>
+        {% for book in books %}
+        <tr>
+            <td>{{book['book_id']}}</td>
+            <td>{{book['title']}}</td>
+            <td>{{book['author']}}</td>
+            <td><span style="color: {{ 'green' if book['status'] == 'Available' else 'orange' }}">{{book['status']}}</span></td>
+            <td>{{book['issued_to'] if book['issued_to'] else '-'}}</td>
+            <td>
+                {% if book['status'] == 'Issued' %}
+                <a href="/return/{{book['book_id']}}" class="btn btn-issue">Return</a>
+                {% endif %}
+                <a href="/delete/{{book['book_id']}}" class="btn btn-del" onclick="return confirm('Delete this book?')">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+

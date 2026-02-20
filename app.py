@@ -1,3 +1,7 @@
+import os  # <--- Ye line zaroori hai
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from flask import Flask, render_template, request, redirect, session, url_for
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 

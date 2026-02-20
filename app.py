@@ -1,19 +1,14 @@
-import os  # <--- Ye line zaroori hai
-import psycopg2
-from psycopg2.extras import RealDictCursor
-from flask import Flask, render_template, request, redirect, session, url_for
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 
 app = Flask(__name__)
-app.secret_key = "secret_key_123" # Session security ke liye
+app.secret_key = "secret_key_123"
 
 def get_db():
     conn = sqlite3.connect("library.db")
-    conn.row_factory = sqlite3.Row # Taaki hum data ko column name se access kar sakein
+    conn.row_factory = sqlite3.Row
     return conn
 
-# Database Setup
 def init_db():
     with get_db() as conn:
         conn.execute("""CREATE TABLE IF NOT EXISTS books(
@@ -21,7 +16,6 @@ def init_db():
             edition TEXT, price TEXT, status TEXT, issued_to TEXT)""")
         conn.execute("CREATE TABLE IF NOT EXISTS users(username TEXT, password TEXT)")
         
-        # Default Admin
         cur = conn.cursor()
         cur.execute("SELECT * FROM users WHERE username='admin'")
         if not cur.fetchone():
@@ -39,7 +33,6 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
         conn = get_db()
         user = conn.execute("SELECT * FROM users WHERE username=? AND password=?", (username, password)).fetchone()
         if user:
@@ -71,6 +64,7 @@ def add_book():
 
 @app.route('/issue/<id>', methods=['POST'])
 def issue_book(id):
+    # Yahan indentation (gap) hona zaroori hai
     student = request.form['student_id']
     conn = get_db()
     conn.execute("UPDATE books SET status='Issued', issued_to=? WHERE book_id=?", (student, id))
@@ -97,6 +91,5 @@ def logout():
     return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    # Isse Render par koi dikkat nahi aayegi
-    app.run(host='0.0.0.0', port=int(os.environ.get("PORT", 5000)))
-
+    # Termux mein 8080 port best chalta hai
+    app.run(debug=True, port=8080)
